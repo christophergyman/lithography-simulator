@@ -12,6 +12,7 @@ export interface LayoutElements {
   zoomOutBtn: HTMLButtonElement;
   zoomLabel: HTMLSpanElement;
   heatmapContainer: HTMLDivElement;
+  mobileTabBar: HTMLElement;
 }
 
 export function buildLayout(root: HTMLElement): LayoutElements {
@@ -30,10 +31,12 @@ export function buildLayout(root: HTMLElement): LayoutElements {
   // Mask panel (left)
   const maskPanel = document.createElement("div");
   maskPanel.className = "panel";
+  maskPanel.dataset.panel = "mask";
 
   // Heatmap panel (center)
   const heatmapPanel = document.createElement("div");
   heatmapPanel.className = "panel panel-heatmap";
+  heatmapPanel.dataset.panel = "view";
   const heatmapContainer = document.createElement("div");
   heatmapContainer.className = "heatmap-container";
   const heatmapCanvas = document.createElement("canvas");
@@ -43,6 +46,7 @@ export function buildLayout(root: HTMLElement): LayoutElements {
   // Params panel (right)
   const paramsPanel = document.createElement("div");
   paramsPanel.className = "panel panel-params";
+  paramsPanel.dataset.panel = "params";
   const paramsTitle = document.createElement("div");
   paramsTitle.className = "panel-title";
   paramsTitle.textContent = "Parameters";
@@ -85,7 +89,37 @@ export function buildLayout(root: HTMLElement): LayoutElements {
 
   heatmapContainer.appendChild(zoomBar);
 
-  root.append(header, maskPanel, heatmapPanel, paramsPanel);
+  // Mobile tab bar
+  const mobileTabBar = document.createElement("div");
+  mobileTabBar.className = "mobile-tab-bar";
+
+  const tabs: { key: string; label: string }[] = [
+    { key: "mask", label: "Mask" },
+    { key: "view", label: "View" },
+    { key: "params", label: "Params" },
+  ];
+
+  const tabButtons: HTMLButtonElement[] = [];
+  for (const tab of tabs) {
+    const btn = document.createElement("button");
+    btn.className = "mobile-tab-btn";
+    btn.textContent = tab.label;
+    btn.dataset.tab = tab.key;
+    btn.addEventListener("click", () => {
+      root.dataset.activeTab = tab.key;
+      for (const b of tabButtons) {
+        b.classList.toggle("active", b.dataset.tab === tab.key);
+      }
+    });
+    tabButtons.push(btn);
+    mobileTabBar.appendChild(btn);
+  }
+
+  // Default active tab
+  root.dataset.activeTab = "view";
+  tabButtons[1].classList.add("active"); // "View" tab
+
+  root.append(header, maskPanel, heatmapPanel, paramsPanel, mobileTabBar);
 
   return {
     maskPanel,
@@ -97,5 +131,6 @@ export function buildLayout(root: HTMLElement): LayoutElements {
     zoomOutBtn,
     zoomLabel,
     heatmapContainer,
+    mobileTabBar,
   };
 }
