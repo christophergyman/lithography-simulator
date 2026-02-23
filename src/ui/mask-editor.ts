@@ -128,7 +128,7 @@ export function createMaskEditor(container: HTMLElement): MaskEditorHandle {
     ctx.putImageData(imageData, 0, 0);
   }
 
-  function getPixel(e: MouseEvent): [number, number] {
+  function getPixel(e: PointerEvent): [number, number] {
     const rect = canvas.getBoundingClientRect();
     const scaleX = N / rect.width;
     const scaleY = N / rect.height;
@@ -163,7 +163,7 @@ export function createMaskEditor(container: HTMLElement): MaskEditorHandle {
     }
   }
 
-  function paint(e: MouseEvent): void {
+  function paint(e: PointerEvent): void {
     const [x, y] = getPixel(e);
     const mask = getState().mask;
     if (toolMode === "stamp") {
@@ -175,18 +175,25 @@ export function createMaskEditor(container: HTMLElement): MaskEditorHandle {
     setMask(mask);
   }
 
-  canvas.addEventListener("mousedown", (e) => {
+  // Prevent browser scroll/zoom while drawing on canvas
+  canvas.style.touchAction = "none";
+
+  canvas.addEventListener("pointerdown", (e) => {
     painting = true;
     paintValue = e.button === 2 ? 0 : 1;
+    canvas.setPointerCapture(e.pointerId);
     paint(e);
   });
 
-  canvas.addEventListener("mousemove", (e) => {
+  canvas.addEventListener("pointermove", (e) => {
     if (painting) paint(e);
   });
 
-  canvas.addEventListener("mouseup", () => { painting = false; });
-  canvas.addEventListener("mouseleave", () => { painting = false; });
+  canvas.addEventListener("pointerup", (e) => {
+    painting = false;
+    canvas.releasePointerCapture(e.pointerId);
+  });
+  canvas.addEventListener("pointerleave", () => { painting = false; });
   canvas.addEventListener("contextmenu", (e) => e.preventDefault());
 
   // --- Tool mode toggle (Brush / Stamp) ---

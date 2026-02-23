@@ -447,3 +447,160 @@ input[type="range"]::-moz-range-thumb {
   min-width: 32px;
   text-align: center;
 }
+
+/* Mobile tab bar — hidden on desktop */
+.mobile-tab-bar {
+  display: none;
+}
+
+/* ===== Mobile responsive ===== */
+@media (max-width: 768px) {
+  /* Single-column tab layout */
+  #app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    height: 100vh;
+  }
+
+  html, body {
+    overflow: auto;
+  }
+
+  /* Hide all panels by default */
+  #app > [data-panel] {
+    display: none;
+  }
+
+  /* Show active panel */
+  #app[data-active-tab="mask"] > [data-panel="mask"] {
+    display: flex;
+  }
+  #app[data-active-tab="view"] > [data-panel="view"] {
+    display: flex;
+  }
+  #app[data-active-tab="params"] > [data-panel="params"] {
+    display: flex;
+  }
+
+  /* Scrollable panels */
+  [data-panel="mask"],
+  [data-panel="params"] {
+    overflow-y: auto;
+  }
+
+  /* Mobile tab bar */
+  .mobile-tab-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+  }
+
+  .mobile-tab-btn {
+    flex: 1;
+    min-height: 48px;
+    background: transparent;
+    border: none;
+    border-top: 3px solid transparent;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .mobile-tab-btn.active {
+    color: var(--accent);
+    border-top-color: var(--accent);
+  }
+
+  /* Reserve space for fixed tab bar */
+  #app {
+    padding-bottom: 48px;
+  }
+
+  /* Touch target sizing — buttons */
+  .preset-btn,
+  .stamp-btn,
+  .mask-tools button,
+  .tool-toggle button,
+  .reset-params-btn {
+    min-height: 44px;
+    font-size: 13px;
+  }
+
+  /* Touch target sizing — zoom */
+  .zoom-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .zoom-bar {
+    opacity: 1;
+  }
+
+  .zoom-slider {
+    width: auto;
+    flex: 1;
+  }
+
+  /* Touch target sizing — range inputs */
+  input[type="range"] {
+    height: 8px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Font size bumps */
+  .panel-title {
+    font-size: 13px;
+  }
+
+  .param-name {
+    font-size: 13px;
+  }
+
+  .param-value {
+    font-size: 14px;
+  }
+
+  .header h1 {
+    font-size: 15px;
+  }
+
+  /* Canvas sizing */
+  .mask-canvas-wrap canvas {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1;
+  }
+
+  .panel-heatmap {
+    padding: 8px;
+  }
+
+  /* Hide canvas size controls on mobile */
+  .canvas-size-controls {
+    display: none;
+  }
+
+  /* Inputs fill available space */
+  .size-text-input {
+    width: 100%;
+  }
+}
