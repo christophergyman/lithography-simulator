@@ -24,6 +24,7 @@ export class HeatmapRenderer {
       antialias: false,
       alpha: false,
       premultipliedAlpha: false,
+      preserveDrawingBuffer: true,
     });
 
     if (!gl) throw new Error("WebGL2 not supported");

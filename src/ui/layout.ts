@@ -13,6 +13,7 @@ export interface LayoutElements {
   zoomLabel: HTMLSpanElement;
   heatmapContainer: HTMLDivElement;
   mobileTabBar: HTMLElement;
+  downloadBtn: HTMLButtonElement;
 }
 
 export function buildLayout(root: HTMLElement): LayoutElements {
@@ -26,7 +27,10 @@ export function buildLayout(root: HTMLElement): LayoutElements {
   const subtitle = document.createElement("span");
   subtitle.className = "subtitle";
   subtitle.textContent = "Fourier Optics / Aerial Image";
-  header.append(h1, subtitle);
+  const downloadBtn = document.createElement("button");
+  downloadBtn.className = "download-btn";
+  downloadBtn.textContent = "Export PNG";
+  header.append(h1, subtitle, downloadBtn);
 
   // Mask panel (left)
   const maskPanel = document.createElement("div");
@@ -132,5 +136,6 @@ export function buildLayout(root: HTMLElement): LayoutElements {
     zoomLabel,
     heatmapContainer,
     mobileTabBar,
+    downloadBtn,
   };
 }
