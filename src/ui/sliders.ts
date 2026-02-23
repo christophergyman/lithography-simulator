@@ -2,7 +2,7 @@
  * Parameter slider controls.
  */
 
-import { getState, setParam } from "../app/state";
+import { getState, setParam, resetParams, DEFAULT_PARAMS } from "../app/state";
 import type { PupilParams } from "../simulation/pupil";
 
 interface SliderDef {
@@ -23,6 +23,8 @@ const SLIDERS: SliderDef[] = [
 ];
 
 export function createSliders(container: HTMLElement): void {
+  const sliderRefs: { def: SliderDef; input: HTMLInputElement; updateDisplay: (val: number) => void }[] = [];
+
   for (const def of SLIDERS) {
     const group = document.createElement("div");
     group.className = "param-group";
@@ -65,5 +67,19 @@ export function createSliders(container: HTMLElement): void {
 
     group.append(labelRow, input);
     container.appendChild(group);
+    sliderRefs.push({ def, input, updateDisplay });
   }
+
+  const resetBtn = document.createElement("button");
+  resetBtn.className = "reset-params-btn";
+  resetBtn.textContent = "Reset Defaults";
+  resetBtn.addEventListener("click", () => {
+    resetParams();
+    for (const { def, input, updateDisplay } of sliderRefs) {
+      const val = DEFAULT_PARAMS[def.key];
+      input.value = String(val);
+      updateDisplay(val);
+    }
+  });
+  container.appendChild(resetBtn);
 }

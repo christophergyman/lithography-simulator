@@ -7,6 +7,11 @@ export interface LayoutElements {
   heatmapCanvas: HTMLCanvasElement;
   paramsPanel: HTMLElement;
   timingReadout: HTMLElement;
+  zoomSlider: HTMLInputElement;
+  zoomInBtn: HTMLButtonElement;
+  zoomOutBtn: HTMLButtonElement;
+  zoomLabel: HTMLSpanElement;
+  heatmapContainer: HTMLDivElement;
 }
 
 export function buildLayout(root: HTMLElement): LayoutElements {
@@ -52,7 +57,43 @@ export function buildLayout(root: HTMLElement): LayoutElements {
   `;
   paramsPanel.appendChild(timingReadout);
 
-  root.append(header, maskPanel, heatmapPanel, paramsPanel);
+  // Zoom bar (footer)
+  const zoomBar = document.createElement("div");
+  zoomBar.className = "zoom-bar";
 
-  return { maskPanel, heatmapCanvas, paramsPanel, timingReadout };
+  const zoomOutBtn = document.createElement("button");
+  zoomOutBtn.className = "zoom-btn";
+  zoomOutBtn.textContent = "\u2212";
+
+  const zoomSlider = document.createElement("input");
+  zoomSlider.type = "range";
+  zoomSlider.className = "zoom-slider";
+  zoomSlider.min = "0.5";
+  zoomSlider.max = "4";
+  zoomSlider.step = "0.1";
+  zoomSlider.value = "1";
+
+  const zoomInBtn = document.createElement("button");
+  zoomInBtn.className = "zoom-btn";
+  zoomInBtn.textContent = "+";
+
+  const zoomLabel = document.createElement("span");
+  zoomLabel.className = "zoom-label";
+  zoomLabel.textContent = "100%";
+
+  zoomBar.append(zoomOutBtn, zoomSlider, zoomInBtn, zoomLabel);
+
+  root.append(header, maskPanel, heatmapPanel, paramsPanel, zoomBar);
+
+  return {
+    maskPanel,
+    heatmapCanvas,
+    paramsPanel,
+    timingReadout,
+    zoomSlider,
+    zoomInBtn,
+    zoomOutBtn,
+    zoomLabel,
+    heatmapContainer,
+  };
 }
