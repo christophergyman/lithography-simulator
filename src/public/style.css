@@ -82,6 +82,7 @@ html, body {
 /* Mask editor panel */
 .panel-mask {
   padding: 10px;
+  overflow-y: auto;
 }
 
 .mask-canvas-wrap {
@@ -220,6 +221,46 @@ html, body {
   background: var(--accent-dim);
   border-color: var(--accent);
   color: var(--text-primary);
+}
+
+/* Canvas size controls */
+.canvas-size-controls {
+  padding: 0 0 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.size-preset-row {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.size-preset-row .stamp-btn {
+  flex: 1;
+  text-align: center;
+}
+
+.size-input-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.size-text-input {
+  width: 70px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 4px 6px;
+  outline: none;
+}
+
+.size-text-input:focus {
+  border-color: var(--accent);
 }
 
 /* Heatmap panel */

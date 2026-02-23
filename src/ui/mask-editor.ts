@@ -6,7 +6,6 @@ import { getState, setMask } from "../app/state";
 import { PRESETS, type PresetName } from "../simulation/mask-presets";
 
 const N = 256;
-const CANVAS_SIZE = 256; // display size in px
 
 // --- Stamp shape generators ---
 // Each returns a list of [dx, dy] offsets relative to center.
@@ -78,7 +77,11 @@ const STAMP_SHAPES: { key: StampShape; label: string }[] = [
   { key: "lineV", label: "Line V" },
 ];
 
-export function createMaskEditor(container: HTMLElement): void {
+export interface MaskEditorHandle {
+  setDisplaySize(size: number): void;
+}
+
+export function createMaskEditor(container: HTMLElement): MaskEditorHandle {
   // Title
   const title = document.createElement("div");
   title.className = "panel-title";
@@ -96,8 +99,6 @@ export function createMaskEditor(container: HTMLElement): void {
   const canvas = document.createElement("canvas");
   canvas.width = N;
   canvas.height = N;
-  canvas.style.width = CANVAS_SIZE + "px";
-  canvas.style.height = CANVAS_SIZE + "px";
 
   wrap.appendChild(canvas);
   inner.appendChild(wrap);
@@ -322,4 +323,11 @@ export function createMaskEditor(container: HTMLElement): void {
 
   // Initial render
   renderMask();
+
+  return {
+    setDisplaySize(size: number) {
+      canvas.style.width = size + "px";
+      canvas.style.height = size + "px";
+    },
+  };
 }
