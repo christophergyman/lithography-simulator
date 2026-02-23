@@ -2,6 +2,8 @@
 
 An interactive web-based optical lithography simulator built with TypeScript and WebGL2. Draw or select mask patterns and visualize the resulting aerial images in real time using Fourier optics.
 
+![Lithography Simulator](assets/screenshot.png)
+
 ## How It Works
 
 The simulator models the optical imaging pipeline used in semiconductor lithography:
