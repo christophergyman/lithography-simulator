@@ -31,7 +31,7 @@ html, body {
 #app {
   display: grid;
   grid-template-columns: var(--panel-mask) 1fr var(--panel-params);
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto 1fr auto;
   height: 100vh;
   gap: 1px;
   background: var(--border);
@@ -235,9 +235,8 @@ html, body {
   position: relative;
   width: 100%;
   height: 100%;
+  overflow: auto;
   display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .heatmap-container canvas {
@@ -246,6 +245,8 @@ html, body {
   aspect-ratio: 1;
   border: 1px solid var(--border);
   border-radius: 4px;
+  margin: auto;
+  flex-shrink: 0;
 }
 
 /* Parameters panel */
@@ -327,4 +328,48 @@ input[type="range"]::-moz-range-thumb {
 
 .timing-readout .value {
   color: var(--green);
+}
+
+/* Zoom bar (footer) */
+.zoom-bar {
+  grid-column: 1 / -1;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.zoom-btn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.zoom-btn:hover {
+  background: var(--bg-primary);
+  border-color: var(--accent-dim);
+}
+
+.zoom-slider {
+  width: 180px;
+}
+
+.zoom-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  min-width: 40px;
+  text-align: center;
 }
