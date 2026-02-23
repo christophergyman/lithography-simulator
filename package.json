@@ -1,0 +1,12 @@
+{
+  "name": "lithography-simulator",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run src/server.ts",
+    "build": "bun build src/app/main.ts --outdir src/public/dist --minify"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
