@@ -16,14 +16,16 @@ type Listener = (state: AppState) => void;
 const listeners: Listener[] = [];
 let pendingNotify = false;
 
+export const DEFAULT_PARAMS: PupilParams = {
+  wavelength: 248,
+  na: 0.75,
+  sigma: 0.5,
+  defocus: 0,
+};
+
 const state: AppState = {
   mask: new Float32Array(N * N),
-  params: {
-    wavelength: 248,
-    na: 0.75,
-    sigma: 0.5,
-    defocus: 0,
-  },
+  params: { ...DEFAULT_PARAMS },
 };
 
 function scheduleNotify(): void {
@@ -52,6 +54,11 @@ export function setMask(mask: Float32Array): void {
 
 export function setParam<K extends keyof PupilParams>(key: K, value: PupilParams[K]): void {
   state.params[key] = value;
+  scheduleNotify();
+}
+
+export function resetParams(): void {
+  Object.assign(state.params, DEFAULT_PARAMS);
   scheduleNotify();
 }
 
