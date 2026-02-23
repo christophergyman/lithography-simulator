@@ -83,7 +83,9 @@ export function buildLayout(root: HTMLElement): LayoutElements {
 
   zoomBar.append(zoomOutBtn, zoomSlider, zoomInBtn, zoomLabel);
 
-  root.append(header, maskPanel, heatmapPanel, paramsPanel, zoomBar);
+  heatmapContainer.appendChild(zoomBar);
+
+  root.append(header, maskPanel, heatmapPanel, paramsPanel);
 
   return {
     maskPanel,
