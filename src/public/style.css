@@ -154,6 +154,74 @@ html, body {
   border-color: var(--accent-dim);
 }
 
+/* Tool mode toggle (Brush / Stamp) */
+.tool-toggle {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.tool-toggle button {
+  flex: 1;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 5px 0;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.tool-toggle button:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-dim);
+}
+
+.tool-toggle button.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+/* Stamp options */
+.stamp-options {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stamp-shape-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.stamp-btn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.stamp-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-dim);
+}
+
+.stamp-btn.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
 /* Heatmap panel */
 .panel-heatmap {
   display: flex;
