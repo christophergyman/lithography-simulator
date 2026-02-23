@@ -4,6 +4,7 @@
 
 import { buildLayout } from "../ui/layout";
 import { createMaskEditor } from "../ui/mask-editor";
+import { createCanvasSizeControls } from "../ui/canvas-size";
 import { createSliders } from "../ui/sliders";
 import { HeatmapRenderer } from "../rendering/renderer";
 import { runPipeline } from "../simulation/pipeline";
@@ -15,7 +16,15 @@ function main(): void {
   const { maskPanel, heatmapCanvas, paramsPanel, timingReadout } = buildLayout(root);
 
   // Initialize mask editor
-  createMaskEditor(maskPanel);
+  const maskEditor = createMaskEditor(maskPanel);
+
+  // Canvas size controls (first child of params panel, above sliders)
+  const sizeWrap = document.createElement("div");
+  paramsPanel.insertBefore(sizeWrap, paramsPanel.firstChild);
+  createCanvasSizeControls(sizeWrap, (size) => {
+    heatmapCanvas.style.width = size + "px";
+    heatmapCanvas.style.height = size + "px";
+  });
 
   // Initialize parameter sliders (insert before timing readout)
   const slidersWrap = document.createElement("div");
