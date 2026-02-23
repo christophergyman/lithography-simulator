@@ -12,7 +12,17 @@ import type { AppState } from "./state";
 
 function main(): void {
   const root = document.getElementById("app")!;
-  const { maskPanel, heatmapCanvas, paramsPanel, timingReadout } = buildLayout(root);
+  const {
+    maskPanel,
+    heatmapCanvas,
+    paramsPanel,
+    timingReadout,
+    zoomSlider,
+    zoomInBtn,
+    zoomOutBtn,
+    zoomLabel,
+    heatmapContainer,
+  } = buildLayout(root);
 
   // Initialize mask editor
   createMaskEditor(maskPanel);
@@ -41,6 +51,50 @@ function main(): void {
     renderer.draw(result.intensity);
     const renderMs = performance.now() - t0;
     renderTiming.textContent = renderMs.toFixed(1);
+  });
+
+  // Zoom controls
+  let baseCanvasSize = 0;
+
+  function applyZoom(value: number): void {
+    if (baseCanvasSize === 0) {
+      baseCanvasSize = heatmapCanvas.offsetWidth;
+    }
+
+    if (value === 1) {
+      // Reset to CSS-driven sizing
+      heatmapCanvas.style.width = "";
+      heatmapCanvas.style.height = "";
+      heatmapCanvas.style.maxWidth = "";
+      heatmapCanvas.style.maxHeight = "";
+      heatmapCanvas.style.minWidth = "";
+      heatmapCanvas.style.minHeight = "";
+    } else {
+      const size = baseCanvasSize * value;
+      heatmapCanvas.style.width = `${size}px`;
+      heatmapCanvas.style.height = `${size}px`;
+      heatmapCanvas.style.maxWidth = "none";
+      heatmapCanvas.style.maxHeight = "none";
+      heatmapCanvas.style.minWidth = `${size}px`;
+      heatmapCanvas.style.minHeight = `${size}px`;
+    }
+
+    zoomLabel.textContent = `${Math.round(value * 100)}%`;
+    zoomSlider.value = String(value);
+  }
+
+  zoomSlider.addEventListener("input", () => {
+    applyZoom(parseFloat(zoomSlider.value));
+  });
+
+  zoomOutBtn.addEventListener("click", () => {
+    const next = Math.max(0.5, parseFloat(zoomSlider.value) - 0.1);
+    applyZoom(Math.round(next * 10) / 10);
+  });
+
+  zoomInBtn.addEventListener("click", () => {
+    const next = Math.min(4, parseFloat(zoomSlider.value) + 0.1);
+    applyZoom(Math.round(next * 10) / 10);
   });
 
   // Load default preset by clicking first button (updates both mask canvas and state)
