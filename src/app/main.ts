@@ -23,6 +23,7 @@ function main(): void {
     zoomOutBtn,
     zoomLabel,
     heatmapContainer,
+    downloadBtn,
   } = buildLayout(root);
 
   // Initialize mask editor
@@ -104,6 +105,15 @@ function main(): void {
   zoomInBtn.addEventListener("click", () => {
     const next = Math.min(4, parseFloat(zoomSlider.value) + 0.1);
     applyZoom(Math.round(next * 10) / 10);
+  });
+
+  // Export heatmap as PNG
+  downloadBtn.addEventListener("click", () => {
+    const link = document.createElement("a");
+    const ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+    link.download = `lithography-simulation-${ts}.png`;
+    link.href = heatmapCanvas.toDataURL("image/png");
+    link.click();
   });
 
   // Load default preset by clicking first button (updates both mask canvas and state)
