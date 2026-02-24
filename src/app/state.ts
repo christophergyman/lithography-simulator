@@ -6,9 +6,20 @@ import type { PupilParams } from "../simulation/pupil";
 
 const N = 256;
 
+export interface ViewParams {
+  threshold: number;
+  crossSectionRow: number;
+}
+
+export const DEFAULT_VIEW_PARAMS: ViewParams = {
+  threshold: 0.3,
+  crossSectionRow: 128,
+};
+
 export interface AppState {
   mask: Float32Array;
   params: PupilParams;
+  viewParams: ViewParams;
 }
 
 type Listener = (state: AppState) => void;
@@ -26,6 +37,7 @@ export const DEFAULT_PARAMS: PupilParams = {
 const state: AppState = {
   mask: new Float32Array(N * N),
   params: { ...DEFAULT_PARAMS },
+  viewParams: { ...DEFAULT_VIEW_PARAMS },
 };
 
 function scheduleNotify(): void {
@@ -57,8 +69,14 @@ export function setParam<K extends keyof PupilParams>(key: K, value: PupilParams
   scheduleNotify();
 }
 
+export function setViewParam<K extends keyof ViewParams>(key: K, value: ViewParams[K]): void {
+  state.viewParams[key] = value;
+  scheduleNotify();
+}
+
 export function resetParams(): void {
   Object.assign(state.params, DEFAULT_PARAMS);
+  Object.assign(state.viewParams, DEFAULT_VIEW_PARAMS);
   scheduleNotify();
 }
 
