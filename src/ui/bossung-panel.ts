@@ -27,6 +27,8 @@ export interface BossungControlsHandle {
   setTiming(timeMs: number, runs: number): void;
   /** Re-enable the run button (called after sweep finishes). */
   setRunning(running: boolean): void;
+  /** Programmatically trigger a Bossung run. */
+  run(): void;
 }
 
 export function createBossungControls(
@@ -140,6 +142,9 @@ export function createBossungControls(
     setRunning(running: boolean) {
       runBtn.disabled = running;
       runBtn.textContent = running ? "Running\u2026" : "Run Bossung Analysis";
+    },
+    run() {
+      runBtn.click();
     },
   };
 }

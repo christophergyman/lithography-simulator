@@ -2,7 +2,7 @@
  * DOM construction — builds the three-panel layout.
  */
 
-export type VizMode = "aerial" | "resist" | "split";
+export type VizMode = "aerial" | "resist" | "split" | "bossung";
 
 export interface LayoutElements {
   maskPanel: HTMLElement;
@@ -23,6 +23,7 @@ export interface LayoutElements {
   mobileTabBar: HTMLElement;
   downloadBtn: HTMLButtonElement;
   setVizMode: (mode: VizMode) => void;
+  onVizModeChange: ((mode: VizMode) => void) | null;
   toggleCrossSection: () => boolean;
   bossungCanvas: HTMLCanvasElement;
   bossungChartContainer: HTMLDivElement;
@@ -53,20 +54,6 @@ export function buildLayout(root: HTMLElement): LayoutElements {
   const heatmapPanel = document.createElement("div");
   heatmapPanel.className = "panel panel-heatmap";
   heatmapPanel.dataset.panel = "view";
-
-  // View toggle (Heatmap / Bossung)
-  const viewToggle = document.createElement("div");
-  viewToggle.className = "view-toggle";
-
-  const heatmapTabBtn = document.createElement("button");
-  heatmapTabBtn.textContent = "Heatmap";
-  heatmapTabBtn.classList.add("active");
-
-  const bossungTabBtn = document.createElement("button");
-  bossungTabBtn.textContent = "Bossung";
-
-  viewToggle.append(heatmapTabBtn, bossungTabBtn);
-  heatmapPanel.appendChild(viewToggle);
 
   // Heatmap container
   const heatmapContainer = document.createElement("div");
@@ -103,6 +90,18 @@ export function buildLayout(root: HTMLElement): LayoutElements {
   csToggleBtn.textContent = "Cross-Section";
   csToggleBtn.dataset.mode = "cs";
   vizToggleBar.appendChild(csToggleBtn);
+
+  // Second separator
+  const sep2 = document.createElement("div");
+  sep2.className = "viz-toggle-sep";
+  vizToggleBar.appendChild(sep2);
+
+  // Bossung toggle
+  const bossungBtn = document.createElement("button");
+  bossungBtn.className = "viz-toggle-btn";
+  bossungBtn.textContent = "Bossung";
+  bossungBtn.dataset.mode = "bossung";
+  vizToggleBar.appendChild(bossungBtn);
 
   // Visualization grid: toggle bar + images row + cross-section
   const vizGrid = document.createElement("div");
@@ -142,92 +141,12 @@ export function buildLayout(root: HTMLElement): LayoutElements {
   crossSectionCanvas.className = "cross-section-canvas";
   crossSectionWrap.appendChild(crossSectionCanvas);
 
-  vizGrid.append(imageRow, crossSectionWrap);
-  heatmapContainer.appendChild(vizGrid);
-  heatmapPanel.appendChild(heatmapContainer);
-
   // Bossung chart container (initially hidden)
   const bossungChartContainer = document.createElement("div");
   bossungChartContainer.className = "bossung-chart-container";
   bossungChartContainer.style.display = "none";
   const bossungCanvas = document.createElement("canvas");
   bossungChartContainer.appendChild(bossungCanvas);
-  heatmapPanel.appendChild(bossungChartContainer);
-
-  // View toggle logic (Heatmap / Bossung)
-  function setView(mode: "heatmap" | "bossung") {
-    const isHeatmap = mode === "heatmap";
-    heatmapContainer.style.display = isHeatmap ? "" : "none";
-    bossungChartContainer.style.display = isHeatmap ? "none" : "flex";
-    heatmapTabBtn.classList.toggle("active", isHeatmap);
-    bossungTabBtn.classList.toggle("active", !isHeatmap);
-  }
-
-  heatmapTabBtn.addEventListener("click", () => setView("heatmap"));
-  bossungTabBtn.addEventListener("click", () => setView("bossung"));
-
-  // Expose setView so main.ts can auto-switch after a sweep
-  (bossungChartContainer as any)._showBossung = () => setView("bossung");
-
-  // View mode logic (Aerial / Resist / Split / Cross-Section)
-  let currentVizMode: VizMode = "aerial";
-  let crossSectionVisible = false;
-
-  function applyVizMode(): void {
-    // Update button active states
-    for (const btn of vizModeButtons) {
-      btn.classList.toggle("active", btn.dataset.mode === currentVizMode);
-    }
-    csToggleBtn.classList.toggle("active", crossSectionVisible);
-
-    // Show/hide canvases
-    heatmapWrap.style.display = currentVizMode === "resist" ? "none" : "";
-    resistWrap.style.display = currentVizMode === "aerial" ? "none" : "";
-    crossSectionWrap.style.display = crossSectionVisible ? "" : "none";
-    crossSectionLine.style.display = crossSectionVisible ? "" : "none";
-  }
-
-  function setVizMode(mode: VizMode): void {
-    currentVizMode = mode;
-    applyVizMode();
-  }
-
-  function toggleCrossSection(): boolean {
-    crossSectionVisible = !crossSectionVisible;
-    applyVizMode();
-    return crossSectionVisible;
-  }
-
-  // Wire up button clicks
-  for (const btn of vizModeButtons) {
-    btn.addEventListener("click", () => {
-      setVizMode(btn.dataset.mode as VizMode);
-    });
-  }
-  csToggleBtn.addEventListener("click", () => {
-    toggleCrossSection();
-  });
-
-  // Set initial state
-  applyVizMode();
-
-  // Params panel (right)
-  const paramsPanel = document.createElement("div");
-  paramsPanel.className = "panel panel-params";
-  paramsPanel.dataset.panel = "params";
-  const paramsTitle = document.createElement("div");
-  paramsTitle.className = "panel-title";
-  paramsTitle.textContent = "Parameters";
-  paramsPanel.appendChild(paramsTitle);
-
-  // Timing readout at bottom of params panel
-  const timingReadout = document.createElement("div");
-  timingReadout.className = "timing-readout";
-  timingReadout.innerHTML = `
-    FFT + Pupil: <span class="value" id="timing-sim">\u2014</span> ms<br>
-    Render: <span class="value" id="timing-render">\u2014</span> ms
-  `;
-  paramsPanel.appendChild(timingReadout);
 
   // Zoom bar (footer)
   const zoomBar = document.createElement("div");
@@ -255,7 +174,86 @@ export function buildLayout(root: HTMLElement): LayoutElements {
 
   zoomBar.append(zoomOutBtn, zoomSlider, zoomInBtn, zoomLabel);
 
-  heatmapContainer.appendChild(zoomBar);
+  vizGrid.append(imageRow, crossSectionWrap, bossungChartContainer);
+  heatmapContainer.append(vizGrid, zoomBar);
+  heatmapPanel.appendChild(heatmapContainer);
+
+  // View mode logic (Aerial / Resist / Split / Cross-Section / Bossung)
+  let currentVizMode: VizMode = "aerial";
+  let crossSectionVisible = false;
+
+  function applyVizMode(): void {
+    const isBossung = currentVizMode === "bossung";
+
+    // Update button active states
+    for (const btn of vizModeButtons) {
+      btn.classList.toggle("active", btn.dataset.mode === currentVizMode);
+    }
+    csToggleBtn.classList.toggle("active", crossSectionVisible && !isBossung);
+    csToggleBtn.classList.toggle("disabled", isBossung);
+    bossungBtn.classList.toggle("active", isBossung);
+
+    // Show/hide views
+    imageRow.style.display = isBossung ? "none" : "";
+    bossungChartContainer.style.display = isBossung ? "flex" : "none";
+    crossSectionWrap.style.display = !isBossung && crossSectionVisible ? "" : "none";
+    crossSectionLine.style.display = !isBossung && crossSectionVisible ? "" : "none";
+    zoomBar.style.display = isBossung ? "none" : "";
+
+    // Show/hide individual canvases
+    if (!isBossung) {
+      heatmapWrap.style.display = currentVizMode === "resist" ? "none" : "";
+      resistWrap.style.display = currentVizMode === "aerial" ? "none" : "";
+    }
+  }
+
+  let vizModeChangeCallback: ((mode: VizMode) => void) | null = null;
+
+  function setVizMode(mode: VizMode): void {
+    currentVizMode = mode;
+    applyVizMode();
+    if (vizModeChangeCallback) vizModeChangeCallback(mode);
+  }
+
+  function toggleCrossSection(): boolean {
+    crossSectionVisible = !crossSectionVisible;
+    applyVizMode();
+    return crossSectionVisible;
+  }
+
+  // Wire up button clicks
+  for (const btn of vizModeButtons) {
+    btn.addEventListener("click", () => {
+      setVizMode(btn.dataset.mode as VizMode);
+    });
+  }
+  csToggleBtn.addEventListener("click", () => {
+    toggleCrossSection();
+  });
+  bossungBtn.addEventListener("click", () => {
+    setVizMode("bossung");
+  });
+
+  // Set initial state
+  applyVizMode();
+
+  // Params panel (right)
+  const paramsPanel = document.createElement("div");
+  paramsPanel.className = "panel panel-params";
+  paramsPanel.dataset.panel = "params";
+  const paramsTitle = document.createElement("div");
+  paramsTitle.className = "panel-title";
+  paramsTitle.textContent = "Parameters";
+  paramsPanel.appendChild(paramsTitle);
+
+  // Timing readout at bottom of params panel
+  const timingReadout = document.createElement("div");
+  timingReadout.className = "timing-readout";
+  timingReadout.innerHTML = `
+    FFT + Pupil: <span class="value" id="timing-sim">\u2014</span> ms<br>
+    Render: <span class="value" id="timing-render">\u2014</span> ms
+  `;
+  paramsPanel.appendChild(timingReadout);
 
   // Mobile tab bar
   const mobileTabBar = document.createElement("div");
@@ -289,7 +287,7 @@ export function buildLayout(root: HTMLElement): LayoutElements {
 
   root.append(header, maskPanel, heatmapPanel, paramsPanel, mobileTabBar);
 
-  return {
+  const elements: LayoutElements = {
     maskPanel,
     heatmapCanvas,
     resistCanvas,
@@ -308,8 +306,12 @@ export function buildLayout(root: HTMLElement): LayoutElements {
     mobileTabBar,
     downloadBtn,
     setVizMode,
+    get onVizModeChange() { return vizModeChangeCallback; },
+    set onVizModeChange(cb) { vizModeChangeCallback = cb; },
     toggleCrossSection,
     bossungCanvas,
     bossungChartContainer,
   };
+
+  return elements;
 }
