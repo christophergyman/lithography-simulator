@@ -48,6 +48,21 @@ bun run build
 
 Outputs a minified bundle to `src/public/dist/`.
 
+### Docker
+
+```bash
+# Build and run
+docker compose up
+
+# Custom port
+PORT=8080 docker compose up
+
+# Detached mode
+docker compose up -d
+```
+
+The image uses a multi-stage build: the frontend is bundled in a build stage, then only the server and static files are copied to a minimal `oven/bun:1-slim` production image.
+
 ## Project Structure
 
 ```

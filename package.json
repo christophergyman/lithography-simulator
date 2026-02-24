@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "bun run src/server.ts",
-    "build": "bun build src/app/main.ts --outdir src/public/dist --minify"
+    "build": "bun build src/app/main.ts --outdir src/public/dist --minify",
+    "start": "bun run src/server.ts"
   },
   "devDependencies": {
     "typescript": "^5.4.0"
