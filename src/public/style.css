@@ -312,6 +312,7 @@ html, body {
 .panel-params {
   padding: 10px 14px;
   gap: 6px;
+  overflow-y: auto;
 }
 
 .param-group {
@@ -393,6 +394,50 @@ input[type="range"]::-moz-range-thumb {
 .reset-params-btn:hover {
   background: var(--bg-primary);
   border-color: var(--accent-dim);
+}
+
+/* Aberration section (collapsible) */
+.aberration-section {
+  margin-top: 14px;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+.aberration-toggle {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 6px 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.aberration-toggle:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-dim);
+}
+
+.aberration-arrow {
+  display: inline-block;
+  font-size: 9px;
+  margin-right: 4px;
+}
+
+.aberration-body {
+  padding-top: 8px;
+}
+
+.zernike-group {
+  margin-bottom: 8px;
+}
+
+.zernike-group .param-name {
+  font-size: 10px;
 }
 
 /* Timing readout */
@@ -548,7 +593,8 @@ input[type="range"]::-moz-range-thumb {
   .stamp-btn,
   .mask-tools button,
   .tool-toggle button,
-  .reset-params-btn {
+  .reset-params-btn,
+  .aberration-toggle {
     min-height: 44px;
     font-size: 13px;
   }
