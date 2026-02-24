@@ -19,6 +19,7 @@ import type { AppState } from "./state";
 
 function main(): void {
   const root = document.getElementById("app")!;
+  const layout = buildLayout(root);
   const {
     maskPanel,
     heatmapCanvas,
@@ -36,7 +37,8 @@ function main(): void {
     downloadBtn,
     bossungCanvas,
     bossungChartContainer,
-  } = buildLayout(root);
+    setVizMode,
+  } = layout;
 
   // Initialize mask editor
   const maskEditor = createMaskEditor(maskPanel);
@@ -82,11 +84,20 @@ function main(): void {
       bossungControls.setTiming(result.timeMs, result.pipelineRuns);
       bossungControls.setRunning(false);
 
-      // Auto-switch to Bossung view
-      const showBossung = (bossungChartContainer as any)._showBossung;
-      if (showBossung) showBossung();
+      // Auto-switch to Bossung view (bossungRunning stays true to prevent re-trigger)
+      setVizMode("bossung");
+      bossungRunning = false;
     }, 0);
   });
+
+  // Auto-run Bossung analysis when switching to the Bossung tab
+  let bossungRunning = false;
+  layout.onVizModeChange = (mode) => {
+    if (mode === "bossung" && !bossungRunning) {
+      bossungRunning = true;
+      bossungControls.run();
+    }
+  };
 
   // Initialize renderers
   const renderer = new HeatmapRenderer(heatmapCanvas);
