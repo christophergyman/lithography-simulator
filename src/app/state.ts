@@ -3,6 +3,7 @@
  */
 
 import type { PupilParams } from "../simulation/pupil";
+import { type ZernikeCoeffs, DEFAULT_ZERNIKE_COEFFS } from "../simulation/zernike";
 
 const N = 256;
 
@@ -32,11 +33,12 @@ export const DEFAULT_PARAMS: PupilParams = {
   na: 0.75,
   sigma: 0.5,
   defocus: 0,
+  zernike: { ...DEFAULT_ZERNIKE_COEFFS },
 };
 
 const state: AppState = {
   mask: new Float32Array(N * N),
-  params: { ...DEFAULT_PARAMS },
+  params: { ...DEFAULT_PARAMS, zernike: { ...DEFAULT_ZERNIKE_COEFFS } },
   viewParams: { ...DEFAULT_VIEW_PARAMS },
 };
 
@@ -69,6 +71,11 @@ export function setParam<K extends keyof PupilParams>(key: K, value: PupilParams
   scheduleNotify();
 }
 
+export function setZernikeCoeff<K extends keyof ZernikeCoeffs>(key: K, value: number): void {
+  state.params.zernike[key] = value;
+  scheduleNotify();
+}
+
 export function setViewParam<K extends keyof ViewParams>(key: K, value: ViewParams[K]): void {
   state.viewParams[key] = value;
   scheduleNotify();
@@ -76,6 +83,7 @@ export function setViewParam<K extends keyof ViewParams>(key: K, value: ViewPara
 
 export function resetParams(): void {
   Object.assign(state.params, DEFAULT_PARAMS);
+  state.params.zernike = { ...DEFAULT_ZERNIKE_COEFFS };
   Object.assign(state.viewParams, DEFAULT_VIEW_PARAMS);
   scheduleNotify();
 }
