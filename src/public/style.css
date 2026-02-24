@@ -883,3 +883,30 @@ input[type="range"]::-moz-range-thumb {
     width: 100%;
   }
 }
+
+/* WebGL error fallback */
+#webgl-error {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 24px;
+  text-align: center;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+}
+
+#webgl-error h2 {
+  font-size: 18px;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+#webgl-error p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 420px;
+}

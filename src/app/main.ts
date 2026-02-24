@@ -2,6 +2,14 @@
  * Entry point — wires all modules together.
  */
 
+window.addEventListener("error", (e) => {
+  console.error("Uncaught error:", e.error);
+});
+
+window.addEventListener("unhandledrejection", (e) => {
+  console.error("Unhandled rejection:", e.reason);
+});
+
 import { buildLayout } from "../ui/layout";
 import { createMaskEditor } from "../ui/mask-editor";
 import { createCanvasSizeControls } from "../ui/canvas-size";
@@ -202,8 +210,20 @@ function main(): void {
 }
 
 // Boot
+function boot(): void {
+  try {
+    main();
+  } catch (err) {
+    console.error("Failed to initialize:", err);
+    const app = document.getElementById("app");
+    const errorDiv = document.getElementById("webgl-error");
+    if (app) app.style.display = "none";
+    if (errorDiv) errorDiv.style.display = "flex";
+  }
+}
+
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", main);
+  document.addEventListener("DOMContentLoaded", boot);
 } else {
-  main();
+  boot();
 }
