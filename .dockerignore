@@ -1,0 +1,10 @@
+node_modules
+.git
+.context
+assets
+*.md
+LICENSE
+.DS_Store
+.dockerignore
+docker-compose.yml
+Dockerfile
