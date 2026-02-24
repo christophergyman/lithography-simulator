@@ -285,9 +285,10 @@ html, body {
 .panel-heatmap {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   padding: 16px;
   background: var(--bg-primary);
+  overflow: auto;
 }
 
 .heatmap-container {
@@ -296,16 +297,111 @@ html, body {
   height: 100%;
   overflow: auto;
   display: flex;
+  justify-content: center;
 }
 
-.heatmap-container canvas {
-  max-width: 100%;
-  max-height: 100%;
+/* View toggle bar */
+.viz-toggle-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+  padding: 3px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  width: fit-content;
+}
+
+.viz-toggle-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.viz-toggle-btn:hover {
+  color: var(--text-primary);
+}
+
+.viz-toggle-btn.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.viz-toggle-sep {
+  width: 1px;
+  height: 16px;
+  background: var(--border);
+  margin: 0 2px;
+}
+
+.cross-section-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Visualization grid layout */
+.viz-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.viz-image-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.viz-image-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+
+.viz-image-wrap canvas {
   aspect-ratio: 1;
   border: 1px solid var(--border);
   border-radius: 4px;
-  margin: auto;
+  image-rendering: pixelated;
   flex-shrink: 0;
+}
+
+.viz-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cross-section-canvas {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  width: 100%;
+  max-width: 540px;
+}
+
+.cross-section-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #f85149;
+  opacity: 0.7;
+  pointer-events: none;
+  transition: top 0.05s ease;
 }
 
 /* Parameters panel */
@@ -707,6 +803,21 @@ input[type="range"]::-moz-range-thumb {
 
   .panel-heatmap {
     padding: 8px;
+  }
+
+  /* Stack viz images vertically on mobile */
+  .viz-image-row {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .viz-image-wrap canvas {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .cross-section-canvas {
+    max-width: 100%;
   }
 
   /* Hide canvas size controls on mobile */

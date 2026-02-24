@@ -6,8 +6,11 @@ import { buildLayout } from "../ui/layout";
 import { createMaskEditor } from "../ui/mask-editor";
 import { createCanvasSizeControls } from "../ui/canvas-size";
 import { createSliders } from "../ui/sliders";
+import { createViewSliders } from "../ui/view-sliders";
 import { createBossungControls } from "../ui/bossung-panel";
 import { HeatmapRenderer } from "../rendering/renderer";
+import { ResistRenderer } from "../rendering/resist-renderer";
+import { CrossSectionRenderer } from "../rendering/cross-section";
 import { BossungChart } from "../rendering/bossung-chart";
 import { runPipeline } from "../simulation/pipeline";
 import { runBossungSweep } from "../simulation/bossung";
@@ -19,6 +22,10 @@ function main(): void {
   const {
     maskPanel,
     heatmapCanvas,
+    resistCanvas,
+    crossSectionCanvas,
+    crossSectionLine,
+    heatmapWrap,
     paramsPanel,
     timingReadout,
     zoomSlider,
@@ -40,6 +47,8 @@ function main(): void {
   createCanvasSizeControls(sizeWrap, (size) => {
     heatmapCanvas.style.width = size + "px";
     heatmapCanvas.style.height = size + "px";
+    resistCanvas.style.width = size + "px";
+    resistCanvas.style.height = size + "px";
   });
 
   // Initialize parameter sliders (insert before timing readout)
@@ -47,6 +56,13 @@ function main(): void {
   slidersWrap.style.padding = "10px 0";
   paramsPanel.insertBefore(slidersWrap, timingReadout);
   createSliders(slidersWrap);
+
+  // Initialize view sliders (resist threshold + cross-section row)
+  const viewSlidersWrap = document.createElement("div");
+  viewSlidersWrap.style.padding = "10px 0";
+  viewSlidersWrap.style.borderTop = "1px solid var(--border)";
+  paramsPanel.insertBefore(viewSlidersWrap, timingReadout);
+  const viewSliders = createViewSliders(viewSlidersWrap);
 
   // Initialize Bossung controls (insert before timing readout)
   const bossungWrap = document.createElement("div");
@@ -72,8 +88,10 @@ function main(): void {
     }, 0);
   });
 
-  // Initialize WebGL renderer
+  // Initialize renderers
   const renderer = new HeatmapRenderer(heatmapCanvas);
+  const resistRenderer = new ResistRenderer(resistCanvas);
+  const crossSectionRenderer = new CrossSectionRenderer(crossSectionCanvas, 540, 140);
 
   // Timing display elements
   const simTiming = document.getElementById("timing-sim")!;
@@ -85,11 +103,21 @@ function main(): void {
     const result = runPipeline(state.mask, state.params);
     simTiming.textContent = result.timeMs.toFixed(1);
 
-    // Render
+    // Render all views
     const t0 = performance.now();
     renderer.draw(result.intensity);
+    resistRenderer.draw(result.intensity, state.viewParams.threshold);
+    crossSectionRenderer.draw(
+      result.intensity,
+      state.viewParams.crossSectionRow,
+      state.viewParams.threshold,
+    );
     const renderMs = performance.now() - t0;
     renderTiming.textContent = renderMs.toFixed(1);
+
+    // Update cross-section line position on heatmap
+    const rowFraction = state.viewParams.crossSectionRow / 255;
+    crossSectionLine.style.top = (rowFraction * 100) + "%";
   });
 
   // Zoom controls
@@ -108,6 +136,12 @@ function main(): void {
       heatmapCanvas.style.maxHeight = "";
       heatmapCanvas.style.minWidth = "";
       heatmapCanvas.style.minHeight = "";
+      resistCanvas.style.width = "";
+      resistCanvas.style.height = "";
+      resistCanvas.style.maxWidth = "";
+      resistCanvas.style.maxHeight = "";
+      resistCanvas.style.minWidth = "";
+      resistCanvas.style.minHeight = "";
     } else {
       const size = baseCanvasSize * value;
       heatmapCanvas.style.width = `${size}px`;
@@ -116,6 +150,12 @@ function main(): void {
       heatmapCanvas.style.maxHeight = "none";
       heatmapCanvas.style.minWidth = `${size}px`;
       heatmapCanvas.style.minHeight = `${size}px`;
+      resistCanvas.style.width = `${size}px`;
+      resistCanvas.style.height = `${size}px`;
+      resistCanvas.style.maxWidth = "none";
+      resistCanvas.style.maxHeight = "none";
+      resistCanvas.style.minWidth = `${size}px`;
+      resistCanvas.style.minHeight = `${size}px`;
     }
 
     zoomLabel.textContent = `${Math.round(value * 100)}%`;
