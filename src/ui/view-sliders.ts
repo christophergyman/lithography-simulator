@@ -13,11 +13,12 @@ interface ViewSliderDef {
   max: number;
   step: number;
   decimals: number;
+  tooltip: string;
 }
 
 const VIEW_SLIDERS: ViewSliderDef[] = [
-  { key: "threshold", label: "Resist Threshold", unit: "", min: 0, max: 1, step: 0.01, decimals: 2 },
-  { key: "crossSectionRow", label: "Cross-Section Row", unit: "px", min: 0, max: 255, step: 1, decimals: 0 },
+  { key: "threshold", label: "Resist Threshold", unit: "", min: 0, max: 1, step: 0.01, decimals: 2, tooltip: "The cutoff that decides what prints and what doesn\u2019t \u2014 like a pass/fail grade for light intensity." },
+  { key: "crossSectionRow", label: "Cross-Section Row", unit: "px", min: 0, max: 255, step: 1, decimals: 0, tooltip: "Which horizontal slice to show in the graph below \u2014 like choosing where to cut through a cake to see inside." },
 ];
 
 export function createViewSliders(container: HTMLElement): { syncFromState: () => void } {
@@ -33,6 +34,7 @@ export function createViewSliders(container: HTMLElement): { syncFromState: () =
   for (const def of VIEW_SLIDERS) {
     const group = document.createElement("div");
     group.className = "param-group";
+    group.dataset.tooltip = def.tooltip;
 
     const labelRow = document.createElement("div");
     labelRow.className = "param-label";

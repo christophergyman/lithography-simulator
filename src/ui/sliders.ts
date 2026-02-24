@@ -14,30 +14,32 @@ interface SliderDef {
   max: number;
   step: number;
   decimals: number;
+  tooltip: string;
 }
 
 const SLIDERS: SliderDef[] = [
-  { key: "wavelength", label: "Wavelength", unit: "nm", min: 193, max: 365, step: 1, decimals: 0 },
-  { key: "na", label: "NA", unit: "", min: 0.1, max: 1.4, step: 0.01, decimals: 2 },
-  { key: "sigma", label: "Sigma (\u03c3)", unit: "", min: 0, max: 1, step: 0.01, decimals: 2 },
-  { key: "defocus", label: "Defocus", unit: "\u03bcm", min: -2, max: 2, step: 0.01, decimals: 2 },
+  { key: "wavelength", label: "Wavelength", unit: "nm", min: 193, max: 365, step: 1, decimals: 0, tooltip: "The color of light used to print the pattern. Shorter wavelengths can print finer details \u2014 like using a sharper pencil." },
+  { key: "na", label: "NA", unit: "", min: 0.1, max: 1.4, step: 0.01, decimals: 2, tooltip: "How wide the lens opening is. A bigger opening captures more detail, like opening your eyes wider to see fine print." },
+  { key: "sigma", label: "Sigma (\u03c3)", unit: "", min: 0, max: 1, step: 0.01, decimals: 2, tooltip: "How spread out the light source is. Low values give a tight beam like a laser pointer; high values spread light like a floodlight." },
+  { key: "defocus", label: "Defocus", unit: "\u03bcm", min: -2, max: 2, step: 0.01, decimals: 2, tooltip: "How far from perfect focus. Like adjusting binoculars \u2014 at zero the image is sharpest." },
 ];
 
 interface ZernikeSliderDef {
   key: keyof ZernikeCoeffs;
   label: string;
   noll: number;
+  tooltip: string;
 }
 
 const ZERNIKE_SLIDERS: ZernikeSliderDef[] = [
-  { key: "z4",  label: "Defocus",      noll: 4 },
-  { key: "z5",  label: "Oblq Astig",   noll: 5 },
-  { key: "z6",  label: "Vert Astig",   noll: 6 },
-  { key: "z7",  label: "Vert Coma",    noll: 7 },
-  { key: "z8",  label: "Horz Coma",    noll: 8 },
-  { key: "z9",  label: "Spherical",    noll: 9 },
-  { key: "z10", label: "Oblq Trefoil", noll: 10 },
-  { key: "z11", label: "Vert Trefoil", noll: 11 },
+  { key: "z4",  label: "Defocus",      noll: 4,  tooltip: "Extra focus shift from lens imperfections \u2014 like wearing slightly wrong prescription glasses." },
+  { key: "z5",  label: "Oblq Astig",   noll: 5,  tooltip: "The lens focuses diagonal lines at different depths \u2014 like a funhouse mirror that stretches things on a tilt." },
+  { key: "z6",  label: "Vert Astig",   noll: 6,  tooltip: "The lens focuses horizontal and vertical lines at different depths \u2014 like looking through a slightly bent lens." },
+  { key: "z7",  label: "Vert Coma",    noll: 7,  tooltip: "Features smear to one side vertically \u2014 like looking through a raindrop on a window." },
+  { key: "z8",  label: "Horz Coma",    noll: 8,  tooltip: "Same smearing effect but sideways \u2014 features get a comet-like tail in the horizontal direction." },
+  { key: "z9",  label: "Spherical",    noll: 9,  tooltip: "Center and edges of the lens focus differently \u2014 like the blur you see at the edge of a magnifying glass." },
+  { key: "z10", label: "Oblq Trefoil", noll: 10, tooltip: "A three-pointed star-shaped distortion on a tilt \u2014 a subtle clover-leaf blur at an angle." },
+  { key: "z11", label: "Vert Trefoil", noll: 11, tooltip: "A three-pointed distortion aligned vertically \u2014 features pick up a subtle triangular blur." },
 ];
 
 export function createSliders(container: HTMLElement): void {
@@ -46,6 +48,7 @@ export function createSliders(container: HTMLElement): void {
   for (const def of SLIDERS) {
     const group = document.createElement("div");
     group.className = "param-group";
+    group.dataset.tooltip = def.tooltip;
 
     const labelRow = document.createElement("div");
     labelRow.className = "param-label";
@@ -106,6 +109,7 @@ export function createSliders(container: HTMLElement): void {
   for (const def of ZERNIKE_SLIDERS) {
     const group = document.createElement("div");
     group.className = "param-group zernike-group";
+    group.dataset.tooltip = def.tooltip;
 
     const labelRow = document.createElement("div");
     labelRow.className = "param-label";

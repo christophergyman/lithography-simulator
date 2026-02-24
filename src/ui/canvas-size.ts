@@ -29,6 +29,7 @@ export function createCanvasSizeControls(
   // --- Slider (reuses .param-group pattern) ---
   const group = document.createElement("div");
   group.className = "param-group";
+  group.dataset.tooltip = "The display size of the simulation on screen. Doesn\u2019t change the physics \u2014 just how big the image looks.";
 
   const labelRow = document.createElement("div");
   labelRow.className = "param-label";
