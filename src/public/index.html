@@ -3,10 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="An interactive web-based optical lithography simulator. Draw mask patterns and visualize aerial images in real time using Fourier optics and WebGL2.">
+  <meta name="theme-color" content="#0d1117">
+  <meta property="og:title" content="Lithography Simulator">
+  <meta property="og:description" content="Draw mask patterns and visualize aerial images in real time using Fourier optics and WebGL2.">
+  <meta property="og:type" content="website">
   <title>Lithography Simulator</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔬</text></svg>">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <noscript>
+    <p style="color:#e6edf3;background:#0d1117;padding:2rem;text-align:center;font-family:system-ui">
+      JavaScript is required to run the Lithography Simulator.
+    </p>
+  </noscript>
   <div id="app"></div>
   <div id="webgl-error">
     <h2>WebGL2 Not Supported</h2>
