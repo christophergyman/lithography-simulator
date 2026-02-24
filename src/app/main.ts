@@ -7,11 +7,14 @@ import { createMaskEditor } from "../ui/mask-editor";
 import { createCanvasSizeControls } from "../ui/canvas-size";
 import { createSliders } from "../ui/sliders";
 import { createViewSliders } from "../ui/view-sliders";
+import { createBossungControls } from "../ui/bossung-panel";
 import { HeatmapRenderer } from "../rendering/renderer";
 import { ResistRenderer } from "../rendering/resist-renderer";
 import { CrossSectionRenderer } from "../rendering/cross-section";
+import { BossungChart } from "../rendering/bossung-chart";
 import { runPipeline } from "../simulation/pipeline";
-import { subscribe } from "./state";
+import { runBossungSweep } from "../simulation/bossung";
+import { subscribe, getState } from "./state";
 import type { AppState } from "./state";
 
 function main(): void {
@@ -31,6 +34,8 @@ function main(): void {
     zoomLabel,
     heatmapContainer,
     downloadBtn,
+    bossungCanvas,
+    bossungChartContainer,
   } = buildLayout(root);
 
   // Initialize mask editor
@@ -58,6 +63,30 @@ function main(): void {
   viewSlidersWrap.style.borderTop = "1px solid var(--border)";
   paramsPanel.insertBefore(viewSlidersWrap, timingReadout);
   const viewSliders = createViewSliders(viewSlidersWrap);
+
+  // Initialize Bossung controls (insert before timing readout)
+  const bossungWrap = document.createElement("div");
+  paramsPanel.insertBefore(bossungWrap, timingReadout);
+
+  const bossungChart = new BossungChart(bossungCanvas);
+
+  const bossungControls = createBossungControls(bossungWrap, (bossungParams) => {
+    bossungControls.setRunning(true);
+
+    // setTimeout lets the "Running..." UI update paint before the sync computation
+    setTimeout(() => {
+      const state = getState();
+      const result = runBossungSweep(state.mask, state.params, bossungParams);
+
+      bossungChart.draw(result);
+      bossungControls.setTiming(result.timeMs, result.pipelineRuns);
+      bossungControls.setRunning(false);
+
+      // Auto-switch to Bossung view
+      const showBossung = (bossungChartContainer as any)._showBossung;
+      if (showBossung) showBossung();
+    }, 0);
+  });
 
   // Initialize renderers
   const renderer = new HeatmapRenderer(heatmapCanvas);

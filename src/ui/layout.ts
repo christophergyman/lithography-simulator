@@ -24,6 +24,8 @@ export interface LayoutElements {
   downloadBtn: HTMLButtonElement;
   setVizMode: (mode: VizMode) => void;
   toggleCrossSection: () => boolean;
+  bossungCanvas: HTMLCanvasElement;
+  bossungChartContainer: HTMLDivElement;
 }
 
 export function buildLayout(root: HTMLElement): LayoutElements {
@@ -51,6 +53,22 @@ export function buildLayout(root: HTMLElement): LayoutElements {
   const heatmapPanel = document.createElement("div");
   heatmapPanel.className = "panel panel-heatmap";
   heatmapPanel.dataset.panel = "view";
+
+  // View toggle (Heatmap / Bossung)
+  const viewToggle = document.createElement("div");
+  viewToggle.className = "view-toggle";
+
+  const heatmapTabBtn = document.createElement("button");
+  heatmapTabBtn.textContent = "Heatmap";
+  heatmapTabBtn.classList.add("active");
+
+  const bossungTabBtn = document.createElement("button");
+  bossungTabBtn.textContent = "Bossung";
+
+  viewToggle.append(heatmapTabBtn, bossungTabBtn);
+  heatmapPanel.appendChild(viewToggle);
+
+  // Heatmap container
   const heatmapContainer = document.createElement("div");
   heatmapContainer.className = "heatmap-container";
 
@@ -128,7 +146,30 @@ export function buildLayout(root: HTMLElement): LayoutElements {
   heatmapContainer.appendChild(vizGrid);
   heatmapPanel.appendChild(heatmapContainer);
 
-  // View mode logic
+  // Bossung chart container (initially hidden)
+  const bossungChartContainer = document.createElement("div");
+  bossungChartContainer.className = "bossung-chart-container";
+  bossungChartContainer.style.display = "none";
+  const bossungCanvas = document.createElement("canvas");
+  bossungChartContainer.appendChild(bossungCanvas);
+  heatmapPanel.appendChild(bossungChartContainer);
+
+  // View toggle logic (Heatmap / Bossung)
+  function setView(mode: "heatmap" | "bossung") {
+    const isHeatmap = mode === "heatmap";
+    heatmapContainer.style.display = isHeatmap ? "" : "none";
+    bossungChartContainer.style.display = isHeatmap ? "none" : "flex";
+    heatmapTabBtn.classList.toggle("active", isHeatmap);
+    bossungTabBtn.classList.toggle("active", !isHeatmap);
+  }
+
+  heatmapTabBtn.addEventListener("click", () => setView("heatmap"));
+  bossungTabBtn.addEventListener("click", () => setView("bossung"));
+
+  // Expose setView so main.ts can auto-switch after a sweep
+  (bossungChartContainer as any)._showBossung = () => setView("bossung");
+
+  // View mode logic (Aerial / Resist / Split / Cross-Section)
   let currentVizMode: VizMode = "aerial";
   let crossSectionVisible = false;
 
@@ -183,8 +224,8 @@ export function buildLayout(root: HTMLElement): LayoutElements {
   const timingReadout = document.createElement("div");
   timingReadout.className = "timing-readout";
   timingReadout.innerHTML = `
-    FFT + Pupil: <span class="value" id="timing-sim">—</span> ms<br>
-    Render: <span class="value" id="timing-render">—</span> ms
+    FFT + Pupil: <span class="value" id="timing-sim">\u2014</span> ms<br>
+    Render: <span class="value" id="timing-render">\u2014</span> ms
   `;
   paramsPanel.appendChild(timingReadout);
 
@@ -268,5 +309,7 @@ export function buildLayout(root: HTMLElement): LayoutElements {
     downloadBtn,
     setVizMode,
     toggleCrossSection,
+    bossungCanvas,
+    bossungChartContainer,
   };
 }
