@@ -13,13 +13,14 @@ interface SliderDef {
   step: number;
   decimals: number;
   defaultValue: number;
+  tooltip: string;
 }
 
 const SLIDERS: SliderDef[] = [
-  { key: "focusSteps", label: "Focus Steps", unit: "", min: 5, max: 21, step: 2, decimals: 0, defaultValue: 11 },
-  { key: "doseMin", label: "Dose Min", unit: "", min: 0.5, max: 1.5, step: 0.05, decimals: 2, defaultValue: 0.7 },
-  { key: "doseMax", label: "Dose Max", unit: "", min: 0.5, max: 1.5, step: 0.05, decimals: 2, defaultValue: 1.3 },
-  { key: "doseSteps", label: "Dose Steps", unit: "", min: 3, max: 9, step: 1, decimals: 0, defaultValue: 7 },
+  { key: "focusSteps", label: "Focus Steps", unit: "", min: 5, max: 21, step: 2, decimals: 0, defaultValue: 11, tooltip: "How many focus positions to test. More steps gives finer detail but takes longer to compute." },
+  { key: "doseMin", label: "Dose Min", unit: "", min: 0.5, max: 1.5, step: 0.05, decimals: 2, defaultValue: 0.7, tooltip: "The lowest light exposure to test \u2014 like the dimmest brightness level in the sweep." },
+  { key: "doseMax", label: "Dose Max", unit: "", min: 0.5, max: 1.5, step: 0.05, decimals: 2, defaultValue: 1.3, tooltip: "The highest light exposure to test \u2014 like the brightest brightness level in the sweep." },
+  { key: "doseSteps", label: "Dose Steps", unit: "", min: 3, max: 9, step: 1, decimals: 0, defaultValue: 7, tooltip: "How many exposure levels to test between min and max. More steps gives smoother results." },
 ];
 
 export interface BossungControlsHandle {
@@ -50,6 +51,7 @@ export function createBossungControls(
   // Focus range info (read-only)
   const focusInfo = document.createElement("div");
   focusInfo.className = "param-label";
+  focusInfo.dataset.tooltip = "The range of focus positions tested \u2014 simulates how the print looks as focus drifts up and down.";
   focusInfo.style.marginBottom = "8px";
   const focusName = document.createElement("span");
   focusName.className = "param-name";
@@ -69,6 +71,7 @@ export function createBossungControls(
   for (const def of SLIDERS) {
     const group = document.createElement("div");
     group.className = "param-group";
+    group.dataset.tooltip = def.tooltip;
 
     const labelRow = document.createElement("div");
     labelRow.className = "param-label";
